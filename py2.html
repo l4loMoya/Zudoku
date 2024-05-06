@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Numerical Puzzle</title>
+<link rel="icon" href="C:/Users/Alumno/Documents/PP2/imagenes/ma.png" type="image/x-icon">
+<style>
+  table {
+    border-collapse: collapse;
+  }
+  td {
+    color: #00A97F;
+    width: 50px;
+    height: 50px;
+    border: 1px solid #00A97F;
+    text-align: center;
+    font-size: 24px;
+    cursor: pointer;
+  }
+  .empty {
+    background-color: transparent;
+  }
+  .timer {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 3rem;
+  color: #fff;
+  background-color: #0c7cd5;
+  border-radius: 5px;
+  padding: 10px;
+  text-align: center;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.timer-finished {
+  background-color: #28a745;
+}
+
+.timer:hover {
+  background-color: #007bff;
+  cursor: pointer;
+}
+body{
+  background-color: black;
+			}
+      .btn {
+ --color: #00A97F;
+ --color2: rgb(10, 25, 30);
+ padding: 0.8em 1.75em;
+ background-color: transparent;
+ border-radius: 6px;
+ border: .3px solid var(--color);
+ transition: .5s;
+ position: relative;
+ overflow: hidden;
+ cursor: pointer;
+ z-index: 1;
+ font-weight: 300;
+ font-size: 17px;
+ font-family: 'Roboto', 'Segoe UI', sans-serif;
+ text-transform: uppercase;
+ color: var(--color);
+}
+
+.btn::after, .btn::before {
+ content: '';
+ display: block;
+ height: 100%;
+ width: 100%;
+ transform: skew(90deg) translate(-50%, -50%);
+ position: absolute;
+ inset: 50%;
+ left: 25%;
+ z-index: -1;
+ transition: .5s ease-out;
+ background-color: var(--color);
+}
+
+.btn::before {
+ top: -50%;
+ left: -25%;
+ transform: skew(90deg) rotate(180deg) translate(-50%, -50%);
+}
+
+.btn:hover::before {
+ transform: skew(45deg) rotate(180deg) translate(-50%, -50%);
+}
+
+.btn:hover::after {
+ transform: skew(45deg) translate(-50%, -50%);
+}
+
+.btn:hover {
+ color: var(--color2);
+}
+
+.btn:active {
+ filter: brightness(.7);
+ transform: scale(.98);
+}
+.temp{
+  color: #00A97F;
+  padding-bottom: 2.5%;
+}
+</style>
+</head>
+<body>
+<center>
+<br><table id="puzzle"></table><br>
+</center>
+
+<center>
+
+<div class="temp" id="temporizador">
+  <span id="minutos">00</span>:<span id="segundos">00</span>
+</div>
+
+<button class="btn" id="iniciar">Iniciar</button>
+<button class="btn" id="detener">Detener</button>
+<button class="btn" id="reiniciar"html>Reiniciar</button>
+
+</center>
+<script>
+
+var tiempoRestante;
+var intervalo;
+
+function iniciarTemporizador() {
+  intervalo = setInterval(actualizarTemporizador, 1000);
+}
+
+function detenerTemporizador() {
+  clearInterval(intervalo);
+}
+
+function reiniciarTemporizador() {
+  detenerTemporizador();
+  tiempoRestante = 0;
+  actualizarTemporizador();
+}
+
+function actualizarTemporizador() {
+  var minutos = Math.floor(tiempoRestante / 60);
+  var segundos = tiempoRestante - (minutos * 60);
+
+  minutos = minutos < 10 ? "0" + minutos : minutos;
+  segundos = segundos < 10 ? "0" + segundos : segundos;
+
+  document.getElementById("minutos").innerHTML = minutos;
+  document.getElementById("segundos").innerHTML = segundos;
+
+  if (tiempoRestante == 0) {
+    detenerTemporizador();
+    alert("Se te acabo el tiempo");
+    window.location.reload();
+  } else {
+    tiempoRestante--;
+  }
+}
+  document.getElementById("iniciar").addEventListener("click", function() {
+  tiempoRestante = 60 * 10; // 10 minutos en segundos
+  iniciarTemporizador();
+  revolver();
+  numeros = Array.from(Array(15), (_, i) => i + 1);
+});
+
+document.getElementById("detener").addEventListener("click", function() {
+  detenerTemporizador();
+});
+
+document.getElementById("reiniciar").addEventListener("click", function() {
+  reiniciarTemporizador();
+
+});
+
+
+  const size = 4; // Tamaño del puzzle
+  const puzzle = document.getElementById('puzzle');
+  let emptyCell = { x: size - 1, y: size - 1 };
+
+  // Crear el puzzle
+  function createPuzzle() {
+    for (let i = 0; i < size; i++) {
+      const row = document.createElement('tr');
+      for (let j = 0; j < size; j++) {
+        const cell = document.createElement('td');
+        cell.id = `rev${j + 1}-${i + 1}`;
+        cell.textContent = i * size + j + 1;
+        cell.addEventListener('click', () => moveCell(i, j));
+        row.appendChild(cell);
+      }
+      puzzle.appendChild(row);
+    }
+    puzzle.rows[emptyCell.x].cells[emptyCell.y].classList.add('empty');
+    puzzle.rows[size - 1].cells[size - 1].textContent = '';
+  }
+
+let numeros = Array.from(Array(15), (_, i) => i + 1);
+
+function generarNumeroAleatorio() {
+  let indiceAleatorio = Math.floor(Math.random() * numeros.length);
+  let numeroAleatorio = numeros[indiceAleatorio];
+
+  numeros.splice(indiceAleatorio, 1);
+
+  return numeroAleatorio;
+}
+
+
+  function revolver() {
+  for (let indexI = 0; indexI < 4; indexI++) {
+    for (let indexJ = 0; indexJ < 4; indexJ++) {
+      const elementoHTML = document.getElementById(`rev${indexJ + 1}-${indexI + 1}`);
+      if (elementoHTML!== document.getElementById("rev4-4")) {
+        elementoHTML.innerHTML = generarNumeroAleatorio();
+      console.log(elementoHTML);
+      }
+      
+    }
+  }
+}
+
+  // Mover la celda
+  function moveCell(x, y) {
+    const dx = Math.abs(emptyCell.x - x);
+    const dy = Math.abs(emptyCell.y - y);
+    if ((dx === 1 && dy === 0) || (dx === 0 && dy === 1)) {
+      puzzle.rows[emptyCell.x].cells[emptyCell.y].textContent = puzzle.rows[x].cells[y].textContent;
+      puzzle.rows[emptyCell.x].cells[emptyCell.y].classList.remove('empty');
+      puzzle.rows[x].cells[y].textContent = '';
+      puzzle.rows[x].cells[y].classList.add('empty');
+      emptyCell.x = x;
+      emptyCell.y = y;
+      checkWin();
+    }
+  }
+
+  // Verificar si se ha ganado
+  function checkWin() {
+    let count = 1;
+    for (let i = 0; i < size; i++) {
+      for (let j = 0; j < size; j++) {
+        if (count != size * size && puzzle.rows[i].cells[j].textContent != count.toString()) {
+          return;
+        }
+        count++;
+      }
+    }
+    alert('¡Felicidades! ¡Has resuelto el Puzzle Numerico !');
+    detenerTemporizador();
+    resetPuzzle();
+  }
+
+  // Reiniciar el puzzle
+  function resetPuzzle() {
+    puzzle.innerHTML = '';
+    emptyCell = { x: size - 1, y: size - 1 };
+    createPuzzle();
+  }
+
+  // Iniciar el puzzle al cargar la página
+  createPuzzle();
+  
+  
+</script>
+
+</body>
+</html>
